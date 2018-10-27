@@ -35,7 +35,7 @@ class Transaction
     /**
      * @ORM\Column(type="integer")
      */
-    private $sharesCount;
+    private $sharesCount = 10;
 
     /**
      * @ORM\Column(type="float")
@@ -45,8 +45,12 @@ class Transaction
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isBuy;
+    private $isBuy = true;
 
+    public function __construct()
+    {
+        $this->addTime = new \DateTime();
+    }
     public function getId() : ? int
     {
         return $this->id;
@@ -112,12 +116,12 @@ class Transaction
         return $this;
     }
 
-    public function getIsBuy(): ?bool
+    public function getIsBuy() : ? bool
     {
         return $this->isBuy;
     }
 
-    public function setIsBuy(bool $isBuy): self
+    public function setIsBuy(bool $isBuy) : self
     {
         $this->isBuy = $isBuy;
 
