@@ -37,10 +37,11 @@ class TransactionController extends AbstractController
             ->setUser($currentUser);
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
+        $leftSharesCount = !$transaction->isBuy() ? $transactionRepository->getTotalSharesCount() - $transaction->getSharesCount() : 0;
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid() && $leftSharesCount >= 0) {
             $transaction->setMoney(
-                $tradeMaster->getQuotationByCompanyTicker($transaction->getCompanyTicker()) * $transaction->getSharesCount()
+                $tradeMaster->getQuotationByTicker($transaction->getCompanyTicker()) * $transaction->getSharesCount()
             );
 
             $em = $this->getDoctrine()->getManager();

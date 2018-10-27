@@ -22,7 +22,7 @@ class TransactionType extends AbstractType
     {
         $builder
             ->add('companyTicker', ChoiceType::class, [
-                'choices' => $this->tradeMaster->getAllCompanyTickers()
+                'choices' => $this->tradeMaster->getAllCompaniesTickers()
             ])
             ->add('sharesCount')
             ->add('isBuy', ChoiceType::class, [

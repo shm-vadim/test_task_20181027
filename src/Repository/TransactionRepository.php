@@ -5,46 +5,52 @@ namespace App\Repository;
 use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use App\Service\UserLoader;
 
-/**
- * @method Transaction|null find($id, $lockMode = null, $lockVersion = null)
- * @method Transaction|null findOneBy(array $criteria, array $orderBy = null)
- * @method Transaction[]    findAll()
- * @method Transaction[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
 class TransactionRepository extends ServiceEntityRepository
 {
-    public function __construct(RegistryInterface $registry)
+    private $userLoader;
+
+    public function __construct(RegistryInterface $registry, UserLoader $userLoader)
     {
         parent::__construct($registry, Transaction::class);
+        $this->userLoader = $userLoader;
     }
 
-//    /**
-//     * @return Transaction[] Returns an array of Transaction objects
-//     */
-    /*
-    public function findByExampleField($value)
+    public function createPortfolioByCurrentUser() : array
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        return array_reduce(
+            $this->findByUser($this->userLoader->getUser()),
+            function (array $companies, Transaction $transaction) : array {
+                $ticker = $transaction->getCompanyTicker();
 
-    /*
-    public function findOneBySomeField($value): ?Transaction
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+                if (!isset($companies[$ticker])) {
+                    $companies[$ticker] = ['ticker' => $ticker, 'sharesCount' => 0];
+                }
+
+                $sharesCount = &$companies[$ticker]['sharesCount'];
+                $boughtSharesCount = $transaction->getSharesCount();
+
+                if ($transaction->isBuy()) {
+                    $sharesCount += $boughtSharesCount;
+                } else {
+                    $sharesCount -= $boughtSharesCount;
+                }
+
+                return $companies;
+            },
+            []
+        );
     }
-    */
+
+    public function getTotalSharesCountByCurrentUserAndTicker(string $ticker) : int
+    {
+        $transactions = $this->findBy(['user' => $this->userLoader->getUser(), 'companyTicker' => $ticker]);
+
+        return array_reduce($transactions, function (int $totalSharesCount, Transaction $transaction) : int {
+            $sharesCount=$transaction->getSharesCount();
+
+            return $transaction->isBuy() ? $totalSharesCount + $sharesCount : $totalSharesCount - $sharesCount;
+        }, 0);
+    }
 }

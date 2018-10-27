@@ -23,13 +23,19 @@ class UserLoader
 
     public function hasUser() : bool
     {
-        return !($this->user instanceof UserInterface);
+        return $this->isUser($this->user);
+    }
+
+    private function isUser($user) : bool
+    {
+        return $user instanceof UserInterface;
     }
 
     private function getUserFromToken() : ? UserInterface
     {
         if ($token = $this->tokenStorage->getToken()) {
-            return $token->getUser();
+            $user = $token->getUser();
+            return $this->isUser($user) ? $user : null;
         }
 
         return null;

@@ -116,7 +116,7 @@ class Transaction
         return $this;
     }
 
-    public function getIsBuy() : ? bool
+    public function isBuy() : ? bool
     {
         return $this->isBuy;
     }
