@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
-</html>
+{%extends "main.html.twig"%}
+
+{%block page%}
+{%block nav parent()%}
+
+{%block body %}
+{%block main ""%}
+{%endblock%}
+
+{%endblock%}
