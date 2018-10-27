@@ -1,4 +1,6 @@
 framework:
+    templating:
+        engines: ['twig', 'php']
     secret: '%env(APP_SECRET)%'
     #default_locale: en
     #csrf_protection: true
@@ -28,3 +30,12 @@ framework:
 
         # APCu (not recommended with heavy random-write workloads as memory fragmentation can cause perf issues)
         #app: cache.adapter.apcu
+fos_user:
+    db_driver: orm # other valid values are 'mongodb' and 'couchdb'
+    firewall_name: main
+    user_class: App\Entity\User
+    from_email:
+        address: '%mailer_user%'
+        sender_name: '%mailer_user%'
+    service:
+        mailer: fos_user.mailer.twig_swift
