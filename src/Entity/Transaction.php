@@ -45,7 +45,7 @@ class Transaction
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isBought;
+    private $isBuy;
 
     public function getId() : ? int
     {
@@ -100,26 +100,26 @@ class Transaction
         return $this;
     }
 
-    public function getMoney(): ?float
+    public function getMoney() : ? float
     {
         return $this->money;
     }
 
-    public function setMoney(float $money): self
+    public function setMoney(float $money) : self
     {
         $this->money = $money;
 
         return $this;
     }
 
-    public function getIsBought(): ?bool
+    public function getIsBuy(): ?bool
     {
-        return $this->isBought;
+        return $this->isBuy;
     }
 
-    public function setIsBought(bool $isBought): self
+    public function setIsBuy(bool $isBuy): self
     {
-        $this->isBought = $isBought;
+        $this->isBuy = $isBuy;
 
         return $this;
     }
