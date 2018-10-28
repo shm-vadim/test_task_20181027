@@ -14,6 +14,8 @@
             <th>Cost of portfolio</th>
             <th>Cost of portfolio an yaer ago</th>
             <th>Cost of portfolio 2 years ago</th>
+            <th>Dividends of previous year</th>
+            <th>Dividends of an year ago</th>
         </tr>
     </thead>
     <tbody>
@@ -25,6 +27,8 @@
             <td>{{ company.sharesCost|round(2) }}</td>
             <td>{{ company.sharesCost1y|round(2) }}</td>
             <td>{{ company.sharesCost2y|round(2) }}</td>
+            <td>{{ company.dividends1y|round(2) }}</td>
+            <td>{{ company.dividends2y|round(2) }}</td>
         </tr>
         {% else %}
         <tr>
@@ -40,6 +44,8 @@
             <th>{{ totalPortfolio.sharesCost|round(2) }}</th>
             <th>{{ totalPortfolio.sharesCost1y|round(2) }}</th>
             <th>{{ totalPortfolio.sharesCost2y|round(2) }}</th>
+            <th>{{ totalPortfolio.dividends1y|round(2) }}</th>
+            <th>{{ totalPortfolio.dividends2y|round(2) }}</th>
         </tr>
     </tfoot>
     {% endif %}

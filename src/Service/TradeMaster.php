@@ -18,8 +18,11 @@ class TradeMaster
     public function getAllCompaniesTickers() : array
     {
         return [
+            'Adobe' => 'ADBE',
+            'Amazon' => 'AMZN ',
             'Apple' => 'AAPL',
-            'Google' => 'GOOG'
+            'Google' => 'GOOG',
+            'Microsoft' => 'MCFT',
         ];
     }
 
@@ -51,5 +54,25 @@ class TradeMaster
     public function getCompanyNameByTicker(string $ticker) : string
     {
         return array_search($ticker, $this->getAllCompaniesTickers());
+    }
+
+    public function getDividentsByTickerAndYear(string $ticker, \DateTimeInterface $dt) : float
+    {
+        $dividends = $this->localCache->get(['dividends[ticker=%s, ago=2y', $ticker], function () use ($ticker) : array {
+            $response = \file_get_contents(sprintf(
+                'https://api.iextrading.com/1.0/stock/%s/dividends/2y',
+                urlencode($ticker)
+            ));
+
+            return dump(json_decode($response, true));
+        });
+
+        $dividendsByYear = array_reduce($dividends, function (float $dividends, array $record) use ($dt) : float {
+            return \DateTime::createFromFormat('Y-m-d', $record['paymentDate'])->format('Y') == $dt->format('Y')
+                ? $dividends + $record['amount']
+                : $dividends;
+        }, 0);
+
+        return $dividendsByYear;
     }
 }

@@ -34,13 +34,15 @@ class IndexController extends AbstractController
                 'sharesCost' => $tradeMaster->getQuotationByTicker($ticker) * $sharesCount,
                 'sharesCost1y' => $tradeMaster->getQuotationByTicker($ticker, $ago('P1Y')) * $sharesCount,
                 'sharesCost2y' => $tradeMaster->getQuotationByTicker($ticker, $ago('P2Y')) * $sharesCount,
+                'dividends1y' => $tradeMaster->getDividentsByTickerAndYear($ticker, $ago('P1Y')) * $sharesCount,
+                'dividends2y' => $tradeMaster->getDividentsByTickerAndYear($ticker, $ago('P2Y')) * $sharesCount,
             ];
 
             return $companies;
         }, []);
 
         $totalPortfolio = array_reduce($companies, function (array $totalPortfolio, array $company) : array {
-            foreach (['sharesCount', 'sharesCost', 'sharesCost1y', 'sharesCost2y'] as $indicator) {
+            foreach (['sharesCount', 'sharesCost', 'sharesCost1y', 'sharesCost2y', 'dividends1y', 'dividends2y'] as $indicator) {
                 if (!isset($totalPortfolio[$indicator])) {
                     $totalPortfolio[$indicator] = 0;
                 }
