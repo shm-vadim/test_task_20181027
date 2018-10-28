@@ -28,7 +28,7 @@ class TransactionController extends AbstractController
     /**
      * @Route("/new", name="transaction_new", methods="GET|POST")
      */
-    public function new(Request $request, UserLoader $userLoader, TradeMaster $tradeMaster) : Response
+    public function new(Request $request, UserLoader $userLoader, TradeMaster $tradeMaster, TransactionRepository $transactionRepository) : Response
     {
         $this->denyAccessUnlessGranted('CREATE_TRANSACTIONS');
 
@@ -37,11 +37,12 @@ class TransactionController extends AbstractController
             ->setUser($currentUser);
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
-        $leftSharesCount = !$transaction->isBuy() ? $transactionRepository->getTotalSharesCount() - $transaction->getSharesCount() : 0;
+        $leftSharesCount = !$transaction->isBuy() ? $transactionRepository->getTotalSharesCountByCurrentUserAndTicker($transaction->getCompanyTicker()) - $transaction->getSharesCount() : 0;
 
         if ($form->isSubmitted() && $form->isValid() && $leftSharesCount >= 0) {
+            $money = $tradeMaster->getQuotationByTicker($transaction->getCompanyTicker()) * $transaction->getSharesCount();
             $transaction->setMoney(
-                $tradeMaster->getQuotationByTicker($transaction->getCompanyTicker()) * $transaction->getSharesCount()
+                !$transaction->isBuy() ? $money : -1 * $money
             );
 
             $em = $this->getDoctrine()->getManager();

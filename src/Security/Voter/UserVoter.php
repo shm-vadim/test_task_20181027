@@ -30,7 +30,7 @@ class UserVoter extends Voter
         return $this->checkRight($attribute, $subject ?? $this->userLoader->getUser(), $token);
     }
 
-    private function canCreateTransaction() : bool
+    private function canCreateTransactions() : bool
     {
         return $this->authChecker->isGranted('ROLE_USER');
     }
