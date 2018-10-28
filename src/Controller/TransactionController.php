@@ -37,19 +37,29 @@ class TransactionController extends AbstractController
             ->setUser($currentUser);
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
-        $leftSharesCount = !$transaction->isBuy() ? $transactionRepository->getTotalSharesCountByCurrentUserAndTicker($transaction->getCompanyTicker()) - $transaction->getSharesCount() : 0;
+        $isBuy = $form->getData('isBuy');
+        $isBuy = (bool)($request->request->get($form->getName())['isBuy'] ?? null);;
 
-        if ($form->isSubmitted() && $form->isValid() && $leftSharesCount >= 0) {
-            $money = $tradeMaster->getQuotationByTicker($transaction->getCompanyTicker()) * $transaction->getSharesCount();
-            $transaction->setMoney(
-                !$transaction->isBuy() ? $money : -1 * $money
-            );
+        if ($form->isSubmitted()) {
+            $leftSharesCount = !$isBuy ? $transactionRepository->getTotalSharesCountByCurrentUserAndTicker($transaction->getCompanyTicker()) - $transaction->getSharesCount() : 0;
 
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($transaction);
-            $em->flush();
+            if ($form->isValid() && $leftSharesCount >= 0) {
+                $money = $tradeMaster->getQuotationByTicker($transaction->getCompanyTicker()) * $transaction->getSharesCount();
+                $transaction->setMoney(
+                    $isBuy ? -1 * $money : $money
+                );
 
-            return $this->redirectToRoute('transaction_index');
+                $sharesCount = $transaction->getSharesCount();
+                $transaction->setSharesCount(
+                    $isBuy ? $sharesCount : -1 * $sharesCount
+                );
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($transaction);
+                $em->flush();
+
+                return $this->redirectToRoute('transaction_index');
+            }
         }
 
         return $this->render('transaction/new.html.twig', [

@@ -27,12 +27,13 @@ class TransactionType extends AbstractType
             ->add('sharesCount')
             ->add('isBuy', ChoiceType::class, [
                 'label' => 'Action',
+                'mapped'=>false,
                 'choices' => [
                     'Buy' => true,
                     'Sell' => false
                 ]
             ]);
-    }
+            }
 
     public function configureOptions(OptionsResolver $resolver)
     {

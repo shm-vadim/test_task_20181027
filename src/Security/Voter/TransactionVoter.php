@@ -22,7 +22,7 @@ class TransactionVoter extends Voter
 
     protected function supports($attribute, $subject)
     {
-        return $this->supportsUser($attribute, $subject);
+        return $subject instanceof Transaction && $this->hasHandler($attribute);
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)

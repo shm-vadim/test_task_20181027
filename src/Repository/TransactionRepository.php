@@ -45,12 +45,10 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function getTotalSharesCountByCurrentUserAndTicker(string $ticker) : int
     {
-        $transactions = $this->findBy(['user' => $this->userLoader->getUser(), 'companyTicker' => $ticker]);
-
-        return array_reduce($transactions, function (int $totalSharesCount, Transaction $transaction) : int {
-            $sharesCount=$transaction->getSharesCount();
-
-            return $transaction->isBuy() ? $totalSharesCount + $sharesCount : $totalSharesCount - $sharesCount;
-        }, 0);
+        return $this->getEntityManager()
+            ->createQuery('select sum(t.sharesCount) as s from App:Transaction t
+        where t.user = :user and t.companyTicker = :ticker')
+            ->setParameters(['user' => $this->userLoader->getUser(), 'ticker' => $ticker])
+            ->GetOneOrNullResult()['s'];
     }
 }

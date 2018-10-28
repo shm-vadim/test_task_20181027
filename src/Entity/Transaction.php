@@ -42,10 +42,6 @@ class Transaction
      */
     private $money;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isBuy = true;
 
     public function __construct()
     {
@@ -116,15 +112,5 @@ class Transaction
         return $this;
     }
 
-    public function isBuy() : ? bool
-    {
-        return $this->isBuy;
-    }
 
-    public function setIsBuy(bool $isBuy) : self
-    {
-        $this->isBuy = $isBuy;
-
-        return $this;
-    }
 }

@@ -3,40 +3,36 @@
 {% block title %}Transaction{% endblock %}
 
 {% block body %}
-    <h1>Transaction</h1>
+<h1>Transaction</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ transaction.id }}</td>
-            </tr>
-            <tr>
-                <th>AddTime</th>
-                <td>{{ transaction.addTime ? transaction.addTime|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>CompanyTicker</th>
-                <td>{{ transaction.companyTicker }}</td>
-            </tr>
-            <tr>
-                <th>SharesCount</th>
-                <td>{{ transaction.sharesCount }}</td>
-            </tr>
-            <tr>
-                <th>Money</th>
-                <td>{{ transaction.money }}</td>
-            </tr>
-            <tr>
-                <th>IsBuy</th>
-                <td>{{ transaction.isBuy ? 'Yes' : 'No' }}</td>
-            </tr>
-        </tbody>
-    </table>
+<table class="table">
+    <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ transaction.id }}</td>
+        </tr>
+        <tr>
+            <th>AddTime</th>
+            <td>{{ transaction.addTime ? transaction.addTime|date('Y-m-d H:i:s') : '' }}</td>
+        </tr>
+        <tr>
+            <th>CompanyTicker</th>
+            <td>{{ transaction.companyTicker }}</td>
+        </tr>
+        <tr>
+            <th>SharesCount</th>
+            <td>{{ transaction.sharesCount }}</td>
+        </tr>
+        <tr>
+            <th>Money</th>
+            <td>{{ transaction.money }}</td>
+        </tr>
+    </tbody>
+</table>
 
-    <a href="{{ path('transaction_index') }}">back to list</a>
+<a href="{{ path('transaction_index') }}">back to list</a>
 
-    <a href="{{ path('transaction_edit', {'id': transaction.id}) }}">edit</a>
+<a href="{{ path('transaction_edit', {'id': transaction.id}) }}">edit</a>
 
-    {{ include('transaction/_delete_form.html.twig') }}
+{{ include('transaction/_delete_form.html.twig') }}
 {% endblock %}

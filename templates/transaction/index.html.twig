@@ -13,8 +13,7 @@
                 <th>CompanyTicker</th>
                 <th>SharesCount</th>
                 <th>Money</th>
-                <th>IsBuy</th>
-                <th>actions</th>
+                                <th>actions</th>
             </tr>
         </thead>
         <tbody>
@@ -25,8 +24,7 @@
                 <td>{{ transaction.companyTicker }}</td>
                 <td>{{ transaction.sharesCount }}</td>
                 <td>{{ transaction.money }}</td>
-                <td>{{ transaction.isBuy ? 'Yes' : 'No' }}</td>
-                <td>
+                                <td>
                     <a href="{{ path('transaction_show', {'id': transaction.id}) }}">show</a>
                     <a href="{{ path('transaction_edit', {'id': transaction.id}) }}">edit</a>
                 </td>
