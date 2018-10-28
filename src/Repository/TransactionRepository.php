@@ -19,28 +19,12 @@ class TransactionRepository extends ServiceEntityRepository
 
     public function createPortfolioByCurrentUser() : array
     {
-        return array_reduce(
-            $this->findByUser($this->userLoader->getUser()),
-            function (array $companies, Transaction $transaction) : array {
-                $ticker = $transaction->getCompanyTicker();
-
-                if (!isset($companies[$ticker])) {
-                    $companies[$ticker] = ['ticker' => $ticker, 'sharesCount' => 0];
-                }
-
-                $sharesCount = &$companies[$ticker]['sharesCount'];
-                $boughtSharesCount = $transaction->getSharesCount();
-
-                if ($transaction->isBuy()) {
-                    $sharesCount += $boughtSharesCount;
-                } else {
-                    $sharesCount -= $boughtSharesCount;
-                }
-
-                return $companies;
-            },
-            []
-        );
+return $this->getEntityManager()
+->createQuery('select t.companyTicker as ticker, sum(t.sharesCount) as sharesCount from App:Transaction t
+where t.user = :user
+group by t.companyTicker')
+->setParameters(['user'=>$this->userLoader->getUser()])
+->getResult();
     }
 
     public function getTotalSharesCountByCurrentUserAndTicker(string $ticker) : int
