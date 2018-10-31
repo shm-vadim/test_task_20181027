@@ -3,9 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Transaction;
+use App\Service\UserLoader;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
-use App\Service\UserLoader;
 
 class TransactionRepository extends ServiceEntityRepository
 {
@@ -17,17 +17,17 @@ class TransactionRepository extends ServiceEntityRepository
         $this->userLoader = $userLoader;
     }
 
-    public function createPortfolioByCurrentUser() : array
+    public function createPortfolioByCurrentUser(): array
     {
-return $this->getEntityManager()
+        return $this->getEntityManager()
 ->createQuery('select t.companyTicker as ticker, sum(t.sharesCount) as sharesCount from App:Transaction t
 where t.user = :user
 group by t.companyTicker')
-->setParameters(['user'=>$this->userLoader->getUser()])
+->setParameters(['user' => $this->userLoader->getUser()])
 ->getResult();
     }
 
-    public function getTotalSharesCountByCurrentUserAndTicker(string $ticker) : int
+    public function getTotalSharesCountByCurrentUserAndTicker(string $ticker): int
     {
         return $this->getEntityManager()
             ->createQuery('select sum(t.sharesCount) as s from App:Transaction t

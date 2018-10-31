@@ -2,20 +2,20 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\User;
 use Doctrine\Common\Inflector\Inflector;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use App\Entity\User;
 
 trait BaseTrait
 {
     protected $subject;
 
-    protected function supportsUser($attribute, $subject) : bool
+    protected function supportsUser($attribute, $subject): bool
     {
         return (($subject instanceof User) or null === $subject) && $this->hasHandler($attribute);
     }
 
-    protected function checkRight($attribute, $subject, TokenInterface $token) : bool
+    protected function checkRight($attribute, $subject, TokenInterface $token): bool
     {
         $this->subject = $subject;
         $handlerName = $this->getHandlerName($attribute);
@@ -27,17 +27,17 @@ trait BaseTrait
         return $this->$handlerName();
     }
 
-    protected function hasHandler($attribute) : bool
+    protected function hasHandler($attribute): bool
     {
         return method_exists($this, $this->getHandlerName($attribute));
     }
 
-    private function hasPrefix($prefix, $attribute) : bool
+    private function hasPrefix($prefix, $attribute): bool
     {
-        return (bool)preg_match("#^{$prefix}_#", $attribute);
+        return (bool) preg_match("#^{$prefix}_#", $attribute);
     }
 
-    private function getHandlerName($attribute) : string
+    private function getHandlerName($attribute): string
     {
         $prefix = 'can';
 
@@ -49,6 +49,6 @@ trait BaseTrait
             $prefix = 'has';
         }
 
-        return Inflector::camelize(strtolower($prefix . '_' . $attribute));
+        return Inflector::camelize(mb_strtolower($prefix.'_'.$attribute));
     }
 }

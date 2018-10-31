@@ -42,75 +42,73 @@ class Transaction
      */
     private $money;
 
-
     public function __construct()
     {
         $this->addTime = new \DateTime();
     }
-    public function getId() : ? int
+
+    public function getId(): ? int
     {
         return $this->id;
     }
 
-    public function getAddTime() : ? \DateTimeInterface
+    public function getAddTime(): ? \DateTimeInterface
     {
         return $this->addTime;
     }
 
-    public function setAddTime(\DateTimeInterface $addTime) : self
+    public function setAddTime(\DateTimeInterface $addTime): self
     {
         $this->addTime = $addTime;
 
         return $this;
     }
 
-    public function getCompanyTicker() : ? string
+    public function getCompanyTicker(): ? string
     {
         return $this->companyTicker;
     }
 
-    public function setCompanyTicker(string $companyTicker) : self
+    public function setCompanyTicker(string $companyTicker): self
     {
         $this->companyTicker = $companyTicker;
 
         return $this;
     }
 
-    public function getUser() : ? User
+    public function getUser(): ? User
     {
         return $this->user;
     }
 
-    public function setUser(? User $user) : self
+    public function setUser(? User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    public function getSharesCount() : ? int
+    public function getSharesCount(): ? int
     {
         return $this->sharesCount;
     }
 
-    public function setSharesCount(int $sharesCount) : self
+    public function setSharesCount(int $sharesCount): self
     {
         $this->sharesCount = $sharesCount;
 
         return $this;
     }
 
-    public function getMoney() : ? float
+    public function getMoney(): ? float
     {
         return $this->money;
     }
 
-    public function setMoney(float $money) : self
+    public function setMoney(float $money): self
     {
         $this->money = $money;
 
         return $this;
     }
-
-
 }

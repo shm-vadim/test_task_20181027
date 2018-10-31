@@ -2,28 +2,27 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TransactionRepository;
 use App\Service\TradeMaster;
-use App\Entity\Transaction;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
     /**
      * @Route("/", name="homepage")
      */
-    public function index(TransactionRepository $transactionRepository, TradeMaster $tradeMaster) : Response
+    public function index(TransactionRepository $transactionRepository, TradeMaster $tradeMaster): Response
     {
         if (!$this->isGranted('ROLE_USER')) {
             return $this->render('index/welcome.html.twig');
         }
 
-        $companies = array_reduce($transactionRepository->createPortfolioByCurrentUser(), function (array $companies, $company) use ($tradeMaster) : array {
+        $companies = array_reduce($transactionRepository->createPortfolioByCurrentUser(), function (array $companies, $company) use ($tradeMaster): array {
             $ticker = $company['ticker'];
             $sharesCount = $company['sharesCount'];
-            $ago = function (string $interval) : \DateTimeInterface {
+            $ago = function (string $interval): \DateTimeInterface {
                 return (new \DateTime())->sub(new \DateInterval($interval));
             };
 
@@ -41,7 +40,7 @@ class IndexController extends AbstractController
             return $companies;
         }, []);
 
-        $totalPortfolio = array_reduce($companies, function (array $totalPortfolio, array $company) : array {
+        $totalPortfolio = array_reduce($companies, function (array $totalPortfolio, array $company): array {
             foreach (['sharesCount', 'sharesCost', 'sharesCost1y', 'sharesCost2y', 'dividends1y', 'dividends2y'] as $indicator) {
                 if (!isset($totalPortfolio[$indicator])) {
                     $totalPortfolio[$indicator] = 0;

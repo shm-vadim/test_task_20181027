@@ -2,11 +2,11 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\Transaction;
 use App\Service\AuthChecker;
+use App\Service\UserLoader;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use App\Entity\Transaction;
-use App\Service\UserLoader;
 
 class TransactionVoter extends Voter
 {
@@ -30,18 +30,18 @@ class TransactionVoter extends Voter
         return $this->checkRight($attribute, $subject, $token);
     }
 
-    private function canShow() : bool
+    private function canShow(): bool
     {
         return $this->authChecker->isGranted('ROLE_USER')
             && $this->subject->getUser() === $this->userLoader->getUser();
     }
 
-    private function canEdit() : bool
+    private function canEdit(): bool
     {
         return $this->canShow();
     }
 
-    private function canDelete() : bool
+    private function canDelete(): bool
     {
         return $this->canShow();
     }

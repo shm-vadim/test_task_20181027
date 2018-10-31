@@ -3,10 +3,9 @@
 namespace App\Security\Voter;
 
 use App\Service\AuthChecker;
+use App\Service\UserLoader;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use App\Entity\User;
-use App\Service\UserLoader;
 
 class UserVoter extends Voter
 {
@@ -30,7 +29,7 @@ class UserVoter extends Voter
         return $this->checkRight($attribute, $subject ?? $this->userLoader->getUser(), $token);
     }
 
-    private function canCreateTransactions() : bool
+    private function canCreateTransactions(): bool
     {
         return $this->authChecker->isGranted('ROLE_USER');
     }

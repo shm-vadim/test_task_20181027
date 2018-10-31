@@ -3,11 +3,11 @@
 namespace App\Form;
 
 use App\Entity\Transaction;
+use App\Service\TradeMaster;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use App\Service\TradeMaster;
 
 class TransactionType extends AbstractType
 {
@@ -22,18 +22,18 @@ class TransactionType extends AbstractType
     {
         $builder
             ->add('companyTicker', ChoiceType::class, [
-                'choices' => $this->tradeMaster->getAllCompaniesTickers()
+                'choices' => $this->tradeMaster->getAllCompaniesTickers(),
             ])
             ->add('sharesCount')
             ->add('isBuy', ChoiceType::class, [
                 'label' => 'Action',
-                'mapped'=>false,
+                'mapped' => false,
                 'choices' => [
                     'Buy' => true,
-                    'Sell' => false
-                ]
+                    'Sell' => false,
+                ],
             ]);
-            }
+    }
 
     public function configureOptions(OptionsResolver $resolver)
     {

@@ -30,7 +30,7 @@ class User extends BaseUser
         $this->transactions = new ArrayCollection();
     }
 
-    public function getId() : ? int
+    public function getId(): ? int
     {
         return $this->id;
     }
@@ -65,5 +65,4 @@ class User extends BaseUser
 
         return $this;
     }
-
 }

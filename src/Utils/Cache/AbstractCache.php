@@ -50,6 +50,6 @@ abstract class AbstractCache
 
     protected function processKey($key): string
     {
-        return is_array($key) ? $this->generateKey(...$key) : $key;
+        return \is_array($key) ? $this->generateKey(...$key) : $key;
     }
 }
