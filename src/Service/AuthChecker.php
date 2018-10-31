@@ -14,7 +14,7 @@ class AuthChecker
         $this->authorizationChecker = $authorizationChecker;
     }
 
-    public function isGranted(...$parameters)
+    public function isGranted(...$parameters): bool
     {
         try {
             return $this->authorizationChecker->isGranted(...$parameters);

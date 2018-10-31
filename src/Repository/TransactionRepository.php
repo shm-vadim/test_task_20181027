@@ -17,14 +17,19 @@ class TransactionRepository extends ServiceEntityRepository
         $this->userLoader = $userLoader;
     }
 
+    public function findByCurrentUser(): array
+    {
+        return $this->findByUser($this->userLoader->getUser());
+    }
+
     public function createPortfolioByCurrentUser(): array
     {
         return $this->getEntityManager()
-->createQuery('select t.companyTicker as ticker, sum(t.sharesCount) as sharesCount from App:Transaction t
+            ->createQuery('select t.companyTicker as ticker, sum(t.sharesCount) as sharesCount from App:Transaction t
 where t.user = :user
 group by t.companyTicker')
-->setParameters(['user' => $this->userLoader->getUser()])
-->getResult();
+            ->setParameters(['user' => $this->userLoader->getUser()])
+            ->getResult();
     }
 
     public function getTotalSharesCountByCurrentUserAndTicker(string $ticker): int

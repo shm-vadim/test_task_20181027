@@ -8,6 +8,8 @@ use App\Repository\TransactionRepository;
 use App\Service\TradeMaster;
 use App\Service\UserLoader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Form;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,7 +24,9 @@ class TransactionController extends AbstractController
      */
     public function index(TransactionRepository $transactionRepository): Response
     {
-        return $this->render('transaction/index.html.twig', ['transactions' => $transactionRepository->findAll()]);
+        return $this->render('transaction/index.html.twig', [
+            'transactions' => $transactionRepository->findByCurrentUser(),
+        ]);
     }
 
     /**
@@ -37,35 +41,42 @@ class TransactionController extends AbstractController
             ->setUser($currentUser);
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
-        $isBuy = $form->getData('isBuy');
-        $isBuy = (bool) ($request->request->get($form->getName())['isBuy'] ?? null);
 
-        if ($form->isSubmitted()) {
-            $leftSharesCount = !$isBuy ? $transactionRepository->getTotalSharesCountByCurrentUserAndTicker($transaction->getCompanyTicker()) - $transaction->getSharesCount() : 0;
-
-            if ($form->isValid() && $leftSharesCount >= 0) {
-                $money = $tradeMaster->getQuotationByTicker($transaction->getCompanyTicker()) * $transaction->getSharesCount();
-                $transaction->setMoney(
-                    $isBuy ? -1 * $money : $money
-                );
-
-                $sharesCount = $transaction->getSharesCount();
-                $transaction->setSharesCount(
-                    $isBuy ? $sharesCount : -1 * $sharesCount
-                );
-
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($transaction);
-                $em->flush();
-
-                return $this->redirectToRoute('transaction_index');
-            }
+        if ($form->isSubmitted() && $redirectResponse = $this->processForm($form, $request, $transactionRepository, $tradeMaster)) {
+            return $redirectResponse;
         }
 
         return $this->render('transaction/new.html.twig', [
             'transaction' => $transaction,
             'form' => $form->createView(),
         ]);
+    }
+
+    private function processForm(Form $form, Request $request, TransactionRepository $transactionRepository, TradeMaster $tradeMaster): ? RedirectResponse
+    {
+        $transaction = $form->getData();
+        $isBuy = (bool) ($request->request->get($form->getName())['isBuy'] ?? null);
+        $leftSharesCount = !$isBuy ? $transactionRepository->getTotalSharesCountByCurrentUserAndTicker($transaction->getCompanyTicker()) - $transaction->getSharesCount() : 0;
+
+        if ($form->isValid() && $leftSharesCount >= 0) {
+            $money = $tradeMaster->getQuotationByTicker($transaction->getCompanyTicker()) * $transaction->getSharesCount();
+            $transaction->setMoney(
+                $isBuy ? -1 * $money : $money
+            );
+
+            $sharesCount = $transaction->getSharesCount();
+            $transaction->setSharesCount(
+                $isBuy ? $sharesCount : -1 * $sharesCount
+            );
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($transaction);
+            $em->flush();
+
+            return $this->redirectToRoute('transaction_index');
+        }
+
+        return null;
     }
 
     /**
@@ -81,17 +92,15 @@ class TransactionController extends AbstractController
     /**
      * @Route("/{id}/edit", name="transaction_edit", methods="GET|POST")
      */
-    public function edit(Request $request, Transaction $transaction): Response
+    public function edit(Request $request, Transaction $transaction, TransactionRepository $transactionRepository, TradeMaster $tradeMaster): Response
     {
         $this->denyAccessUnlessGranted('EDIT', $transaction);
 
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('transaction_edit', ['id' => $transaction->getId()]);
+        if ($form->isSubmitted() && $redirectResponse = $this->processForm($form, $request, $transactionRepository, $tradeMaster)) {
+            return $redirectResponse;
         }
 
         return $this->render('transaction/edit.html.twig', [
